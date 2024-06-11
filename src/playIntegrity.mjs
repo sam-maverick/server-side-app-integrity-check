@@ -259,54 +259,50 @@ export async function verifyPlayIntegrity(decryptedToken, nonce_truth, requestTy
   // CHECK RECENT DEVICE ACTIVITY ////////////////////////////////////////////
   // This field is within the deviceIntegrity field !!
 
-  // NOTE: This feature is in beta at Google side at the time ow writing this code
+  // NOTE: This feature was in beta at Google side at the time of starting to write this code,
+  // but apparently it's not any more.
   // https://developer.android.com/google/play/integrity/setup#optional_device_information
 
-  if (requestType === 'standard') {  // Only applies to standard requests !!
-
-    // check if recentDeviceActivity exists in decryptedToken
-    var recentDeviceActivity = decryptedToken?.deviceIntegrity?.recentDeviceActivity;
-    if (recentDeviceActivity == null) {
-      return {status: "fail", message: "deviceIntegrity.recentDeviceActivity not found in received token."};
-    }
-
-    // check if deviceActivityLevel meets maximum standards.
-    if ( ! recentDeviceActivity?.deviceActivityLevel) {  // Field present?
-      return {status: "fail", message: "Missing deviceIntegrity.recentDeviceActivity.deviceActivityLevel field in the token."};
-    }
-    if ( ! ((typeof recentDeviceActivity.deviceActivityLevel) === 'string')) {  // Is of string type?
-      return {status: "fail", message: "Wrong type for deviceIntegrity.recentDeviceActivity.deviceActivityLevel. We expected string. We found "+(typeof recentDeviceActivity.deviceActivityLevel)+"."};
-    }
-    // - check value
-    if (recentDeviceActivity.deviceActivityLevel == "UNEVALUATED"){
-      return {status: "fail", message: "deviceIntegrity.recentDeviceActivity.deviceActivityLevel is UNEVALUATED."};
-    }
-    var attestedDeviceActivityLevel = undefined;
-    switch(recentDeviceActivity.deviceActivityLevel) {
-      case 'LEVEL_1':
-        attestedDeviceActivityLevel = 1;
-        break;
-      case 'LEVEL_2':
-        attestedDeviceActivityLevel = 2;
-        break;
-      case 'LEVEL_3':
-        attestedDeviceActivityLevel = 3;
-        break;
-      case 'LEVEL_4':
-        attestedDeviceActivityLevel = 4;
-        break;
-      default:
-        return {status: "fail", message: "deviceIntegrity.recentDeviceActivity.deviceActivityLevel had an unexpected value. Values must be within LEVEL_1, LEVEL_2, LEVEL_3, and LEVEL_4."};     
-    }
-    if (attestedDeviceActivityLevel > maxAllowedActivityLevel) {
-      return {status: "fail", message: "deviceIntegrity.recentDeviceActivity.deviceActivityLevel showed a value beyond our allowed limits. The maximum that is allowed is LEVEL_"+maxAllowedActivityLevel+". We found LEVEL_"+attestedDeviceActivityLevel+"."};     
-    }
-
-    sharedlib.logEvent('INFO', 'Attested device has valid deviceActivityLevel', 1);
-    sharedlib.logEvent('DEBUG', 'recentDeviceActivity.deviceActivityLevel: '+recentDeviceActivity.deviceActivityLevel, 2);
-
-
+  // check if recentDeviceActivity exists in decryptedToken
+  var recentDeviceActivity = decryptedToken?.deviceIntegrity?.recentDeviceActivity;
+  if (recentDeviceActivity == null) {
+    return {status: "fail", message: "deviceIntegrity.recentDeviceActivity not found in received token."};
   }
+
+  // check if deviceActivityLevel meets maximum standards.
+  if ( ! recentDeviceActivity?.deviceActivityLevel) {  // Field present?
+    return {status: "fail", message: "Missing deviceIntegrity.recentDeviceActivity.deviceActivityLevel field in the token."};
+  }
+  if ( ! ((typeof recentDeviceActivity.deviceActivityLevel) === 'string')) {  // Is of string type?
+    return {status: "fail", message: "Wrong type for deviceIntegrity.recentDeviceActivity.deviceActivityLevel. We expected string. We found "+(typeof recentDeviceActivity.deviceActivityLevel)+"."};
+  }
+  // - check value
+  if (recentDeviceActivity.deviceActivityLevel == "UNEVALUATED"){
+    return {status: "fail", message: "deviceIntegrity.recentDeviceActivity.deviceActivityLevel is UNEVALUATED."};
+  }
+  var attestedDeviceActivityLevel = undefined;
+  switch(recentDeviceActivity.deviceActivityLevel) {
+    case 'LEVEL_1':
+      attestedDeviceActivityLevel = 1;
+      break;
+    case 'LEVEL_2':
+      attestedDeviceActivityLevel = 2;
+      break;
+    case 'LEVEL_3':
+      attestedDeviceActivityLevel = 3;
+      break;
+    case 'LEVEL_4':
+      attestedDeviceActivityLevel = 4;
+      break;
+    default:
+      return {status: "fail", message: "deviceIntegrity.recentDeviceActivity.deviceActivityLevel had an unexpected value. Values must be within LEVEL_1, LEVEL_2, LEVEL_3, and LEVEL_4."};     
+  }
+  if (attestedDeviceActivityLevel > maxAllowedActivityLevel) {
+    return {status: "fail", message: "deviceIntegrity.recentDeviceActivity.deviceActivityLevel showed a value beyond our allowed limits. The maximum that is allowed is LEVEL_"+maxAllowedActivityLevel+". We found LEVEL_"+attestedDeviceActivityLevel+"."};     
+  }
+
+  sharedlib.logEvent('INFO', 'Attested device has valid deviceActivityLevel', 1);
+  sharedlib.logEvent('DEBUG', 'recentDeviceActivity.deviceActivityLevel: '+recentDeviceActivity.deviceActivityLevel, 2);
 
 
   // CHECK APP INTEGRITY ////////////////////////////////////////////
