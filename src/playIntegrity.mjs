@@ -259,8 +259,7 @@ export async function verifyPlayIntegrity(decryptedToken, nonce_truth, requestTy
   // CHECK RECENT DEVICE ACTIVITY ////////////////////////////////////////////
   // This field is within the deviceIntegrity field !!
 
-  // NOTE: This feature was in beta at Google side at the time of starting to write this code,
-  // but apparently it's not any more.
+  // NOTE: As of 11-June-2024, this feature is no longer in beta and is available for both Classic and Standard requests
   // https://developer.android.com/google/play/integrity/setup#optional_device_information
 
   // check if recentDeviceActivity exists in decryptedToken
