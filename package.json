@@ -1,8 +1,8 @@
 {
   "name": "server-side-app-integrity-check",
-  "version": "1.105.0",
+  "version": "1.106.0",
   "description": "Server side library to generate nonces and check attestation tokens received from client apps within Android's Play Integrity API or Apple's App Attest API. It supports both classic and standard requests of Play Integrity API.",
-  "main": "src/playIntegrity.mjs",
+  "main": "src/playIntegrity.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
