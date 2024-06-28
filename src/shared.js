@@ -18,7 +18,7 @@ export function logEvent(type, content, loglevelofthisevent) {
     myLoggingLevel = process.env.LOGGING_LEVEL;
   }
 
-  if (loglevelofthisevent > myLoggingLevel)  return;
+  if (loglevelofthisevent <= myLoggingLevel)  return;
 
   const date = new Date();
   const time = date.toLocaleTimeString();
