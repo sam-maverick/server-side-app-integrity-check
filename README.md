@@ -1,14 +1,16 @@
 # Server-side app integrity check Nodejs library
 
-This is a Node.js module that is to be used in your app server to validate Android's app integrity tokens (or, attestation objects) sent by your clients. It can validate tokens of Android's [Play Integrity API](https://developer.android.com/google/play/integrity/overview) (either classic or standard requests). It does NOT support Android's deprecated SafetyNet API.
+This is a Node.js module that is to be used in your app server to validate Android's app integrity tokens (or, attestation objects) sent by your clients. It supports tokens of Android's [Play Integrity API](https://developer.android.com/google/play/integrity/overview) (both classic and standard requests). It does NOT support Android's deprecated SafetyNet API, nor iOS DeviceCheck assertion tokens.
 
-It is your responsibility to handle Google/Apple server outages (as those servers must inevitably be used in the attestation requests), to design your platform logic to conform to the API request rate limits such as onboarding users gradually (in iOS, attestation should be [typically be performed once per user and device](https://developer.apple.com/documentation/devicecheck/preparing_to_use_the_app_attest_service); Android's Play Integrity requests are [throttled to 10,000](https://developer.android.com/google/play/integrity/classic#compare-standard) per app platform per day in the lowest tier among other limits), and to have a plan on how to handle clients that do not meet the maximum standards (for example, rooted devices or with Play Protect disabled), among other considerations.
+It is your responsibility to handle Google/Apple server outages (as those servers must inevitably be used in the attestation requests), to design your platform logic to conform to the API request rate limits such as onboarding users gradually (Android's Play Integrity requests are [throttled to 10,000](https://developer.android.com/google/play/integrity/classic#compare-standard) per app platform per day in the lowest tier, among other limits), and to have a plan on how to handle clients that do not meet the maximum standards (for example, rooted devices or with Play Protect disabled), among other considerations.
 
-If you need a library to generate attestation tokens on the client side (the app running on the users' devices), then check this out:
-Standard requests: https://github.com/sam-maverick/app-integrity-android-standard
-Classic requests: https://github.com/jeffDevelops/expo-app-integrity
+If you need a library to generate attestation/assertion tokens on the client side (the app running on the users' devices), then check this out:
+Android's Play Integrity Standard requests: https://github.com/sam-maverick/app-integrity-android-standard
+Android's Play Integrity Classic requests: https://github.com/jeffDevelops/expo-app-integrity
+Apple iOS DeviceCkeck attestation and assertion tokens: https://github.com/jeffDevelops/expo-app-integrity
 
-If you need a library to check iOS attestations from the server side, then check this out: [https://github.com/srinivas1729/appattest-checker-node](https://github.com/srinivas1729/appattest-checker-node)
+If you need a library to check iOS attestations/assertions from the server side, then check this out:
+[https://github.com/srinivas1729/appattest-checker-node](https://github.com/srinivas1729/appattest-checker-node)
 
 This work (code and documentation) is based on [https://github.com/herzhenr/spic-server](https://github.com/herzhenr/spic-server). See the attached license.
 
@@ -33,8 +35,7 @@ This work (code and documentation) is based on [https://github.com/herzhenr/spic
 
 #### Environment variables
 
-Define the necessary environment variables in a `.env` file at the root of your project.
-Use `example.env` as a sample. Don't forget to rename it to `.env`
+Define the necessary environment variables in a `.env` file at the root of *your* project. Use `example.env` as an example. Don't forget to rename it to `.env` (if your project already has a `.env` file, the just add/merge the parameters there).
 
 
 
