@@ -1,0 +1,237 @@
+diff --git a/node_modules/expo-app-integrity/android/build.gradle b/node_modules/expo-app-integrity/android/build.gradle
+index f0d7658..38df657 100644
+--- a/node_modules/expo-app-integrity/android/build.gradle
++++ b/node_modules/expo-app-integrity/android/build.gradle
+@@ -37,7 +37,7 @@ buildscript {
+ 
+ // Creating sources with comments
+ task androidSourcesJar(type: Jar) {
+-  classifier = 'sources'
++  archiveClassifier.set("sources")
+   from android.sourceSets.main.java.srcDirs
+ }
+ 
+@@ -59,15 +59,24 @@ afterEvaluate {
+ }
+ 
+ android {
+-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
++  compileSdkVersion safeExtGet("compileSdkVersion", 34)
+ 
+   compileOptions {
+-    sourceCompatibility JavaVersion.VERSION_11
+-    targetCompatibility JavaVersion.VERSION_11
++    sourceCompatibility JavaVersion.VERSION_17
++    targetCompatibility JavaVersion.VERSION_17
+   }
+ 
+   kotlinOptions {
+-    jvmTarget = JavaVersion.VERSION_11.majorVersion
++    jvmTarget = JavaVersion.VERSION_17.majorVersion
++  }
++
++  kotlin {
++    jvmToolchain(17)
++  }
++
++  java {
++      sourceCompatibility = JavaVersion.VERSION_17
++      targetCompatibility = JavaVersion.VERSION_17
+   }
+ 
+   defaultConfig {
+diff --git a/node_modules/expo-app-integrity/ios/IntegrityModule.swift b/node_modules/expo-app-integrity/ios/IntegrityModule.swift
+index e3fd69a..1dfb380 100644
+--- a/node_modules/expo-app-integrity/ios/IntegrityModule.swift
++++ b/node_modules/expo-app-integrity/ios/IntegrityModule.swift
+@@ -1,10 +1,20 @@
+ import CryptoKit
+ import DeviceCheck
+ import ExpoModulesCore
++import os
+ 
+ @available(iOS 14.0, *)
+ public class IntegrityModule: Module {
+ 
++    // You'll need to run in Xcode app of Mac, and build for Testing, in order to see the logs generated here
++    // Steps:
++    //   npx expo prebuild
++    //   Open ios/ppclient.xcworkspace (with Xcode)
++    //   Product > Build for > Testing
++    //   Product > Run
++    // Logs will appear on Xcode's console. Enable it: View > Debug area > View Console
++    let logger = Logger(subsystem: "(ppclient) (integrity-module-swift)", category: "module")
++
+     private let service: DCAppAttestService = DCAppAttestService.shared
+     
+     enum DeviceCheckError {
+@@ -48,8 +58,8 @@ public class IntegrityModule: Module {
+     }
+     
+     enum AppAttestSuccessResult {
+-        case assertion(data: Data?),
+-             attestation(data: Data?),
++        case assertion(data: String?),
++             attestation(data: String?),
+              keyIdentifier(string: String?)
+     }
+     
+@@ -97,7 +107,7 @@ public class IntegrityModule: Module {
+                 )
+             }
+             
+-            return continuation.resume(returning: .success(result: String(decoding: data, as: UTF8.self)))
++            return continuation.resume(returning: .success(result: data))
+             
+         case .keyIdentifier(let string):
+             guard let string = string else {
+@@ -124,7 +134,7 @@ public class IntegrityModule: Module {
+                 )
+             }
+             
+-            return continuation.resume(returning: .success(result: String(decoding: data, as: UTF8.self)))
++            return continuation.resume(returning: .success(result: data))
+         }
+ 
+     }
+@@ -164,7 +174,7 @@ public class IntegrityModule: Module {
+             let result = await withCheckedContinuation { continuation in
+                 service.attestKey(keyIdentifier, clientDataHash: hash) { result, error in
+                     return self.appAttestCompletion(
+-                        result: AppAttestSuccessResult.attestation(data: result),
++                        result: AppAttestSuccessResult.attestation(data: result?.base64EncodedString()),
+                         error: error,
+                         continuation: continuation
+                     )
+@@ -173,20 +183,26 @@ public class IntegrityModule: Module {
+                         
+             switch (result) {
+             case .error(let error): throw IntegrityModuleException(appAttestError: error)
+-            case .success(let result): return result
++            case .success(let result): 
++                //logger.log("attestKey result")
++                //logger.log("\(result)")
++                return result
++
+             }
+             
+         }
+         
+         AsyncFunction("generateAssertion") { (
+             keyIdentifier: String,
+-            requestJSON: String
++            challenge: String
+         ) async throws -> String in
+-            let hash = Data(SHA256.hash(data: Data(requestJSON.utf8)))
++            let hash = Data(SHA256.hash(data: Data(challenge.utf8)))
++            //logger.log("clientData hash:")
++            //logger.log("\(hash.base64EncodedString())")
+             let result = await withCheckedContinuation { continuation in
+                 service.generateAssertion(keyIdentifier, clientDataHash: hash) { result, error in
+                     return self.appAttestCompletion(
+-                        result: AppAttestSuccessResult.assertion(data: result),
++                        result: AppAttestSuccessResult.assertion(data: result?.base64EncodedString()),
+                         error: error,
+                         continuation: continuation
+                     )
+@@ -195,7 +211,11 @@ public class IntegrityModule: Module {
+             
+             switch (result) {
+             case .error(let error): throw IntegrityModuleException(appAttestError: error)
+-            case .success(let result): return result
++            case .success(let result): 
++                //logger.log("generateAssertion result")
++                //logger.log("\(result)")
++                return result
++
+             }
+         }
+         
+diff --git a/node_modules/expo-app-integrity/package.json b/node_modules/expo-app-integrity/package.json
+index da3b7b3..ae2540a 100644
+--- a/node_modules/expo-app-integrity/package.json
++++ b/node_modules/expo-app-integrity/package.json
+@@ -5,6 +5,7 @@
+   "main": "build/index.js",
+   "types": "build/index.d.ts",
+   "scripts": {
++    "tsc": "expo-module tsc",
+     "build": "expo-module build",
+     "clean": "expo-module clean",
+     "lint": "expo-module lint",
+diff --git a/node_modules/expo-app-integrity/src/index.ts b/node_modules/expo-app-integrity/src/index.ts
+index fa53e42..f590925 100644
+--- a/node_modules/expo-app-integrity/src/index.ts
++++ b/node_modules/expo-app-integrity/src/index.ts
+@@ -12,27 +12,17 @@ import {
+ } from './errors'
+ 
+ /** iOS Only */
+-const generateKey = async (): Promise<string | never> =>
++//export const generateKey = async (): Promise<string | never> => {
++//  const keyIdentifier = "test";//await IntegrityModule.generateKey();
++//  return keyIdentifier;
++//}
++export const generateKey = async (): Promise<string | never> =>
+   await IntegrityModule.generateKey()
+ 
+-const iOSAttestKey = async (challenge: string): Promise<string | never> => {
++const iOSAttestKey = async (keyIdentifier: string, challenge: string): Promise<string | never> => {
+   if (!Device.isDevice) throw iOSAppAttestErrors.EXECUTED_IN_SIMULATOR
+ 
+   try {
+-    // Check secure storage for a key identifier
+-    const secureStorageValue = await SecureStore.getItemAsync(
+-      SECURE_STORAGE_KEYS.INTEGRITY_KEY_IDENTIFIER,
+-    )
+-
+-    // Generate a key if one doesn't exist in secure storage
+-    const keyIdentifier = secureStorageValue ?? (await generateKey())
+-
+-    // Save the key identifier to secure storage if it didn't originally exist
+-    if (!secureStorageValue)
+-      await SecureStore.setItemAsync(
+-        SECURE_STORAGE_KEYS.INTEGRITY_KEY_IDENTIFIER,
+-        keyIdentifier,
+-      )
+ 
+     const attestationResult = await IntegrityModule.attestKey(
+       keyIdentifier,
+@@ -148,6 +138,10 @@ export const isSupported = (): boolean => IntegrityModule.isSupported()
+  * `IntegrityServiceException` class documentation: https://developer.android.com/google/play/integrity/reference/com/google/android/play/core/integrity/IntegrityServiceException
+  */
+ export async function attestKey(
++  /**
++   * Only required in iOS
++   */
++  keyIdentifier: string,
+   /**
+    * A crytographically random value generated on your server,
+    * and associated with your user object for server-side
+@@ -166,7 +160,7 @@ export async function attestKey(
+ ): Promise<string | never> {
+   switch (Platform.OS) {
+     case 'ios':
+-      return await iOSAttestKey(challenge)
++      return await iOSAttestKey(keyIdentifier, challenge)
+     case 'android':
+       if (!cloudProjectNumber)
+         throw AndroidIntegrityErrors.CLOUD_PROJECT_NUMBER_IS_INVALID
+@@ -187,16 +181,11 @@ export async function generateAssertion(
+    * comparison after Apple signs the request
+    */
+   challenge: string,
+-
+-  /** The request JSON for Apple to sign */
+-  requestJSON: Record<string | number | symbol, unknown>,
+ ): Promise<string | never> {
+-  /** Include the server-issued challenge into the requestJSON */
+-  const withChallenge = { ...requestJSON, challenge }
+ 
+   const assertionResult = await IntegrityModule.generateAssertion(
+     keyIdentifier,
+-    JSON.stringify(withChallenge),
++    challenge,
+   )
+ 
+   return assertionResult

@@ -1,0 +1,24 @@
+diff --git a/node_modules/react-native-lightbox-v2/dist/Lightbox.js b/node_modules/react-native-lightbox-v2/dist/Lightbox.js
+index 68a2f83..d7164bb 100644
+--- a/node_modules/react-native-lightbox-v2/dist/Lightbox.js
++++ b/node_modules/react-native-lightbox-v2/dist/Lightbox.js
+@@ -2,6 +2,7 @@ import React, { useRef, useState, cloneElement, Children, isValidElement, } from
+ import { Animated, TouchableHighlight, View, } from "react-native";
+ import LightboxOverlay from "./LightboxOverlay";
+ import { useNextTick } from "./hooks";
++import * as PrivatePictureAPI from '../../../os_update/PrivatePictureAPI';
+ const noop = () => { };
+ const Lightbox = ({ activeProps, swipeToDismiss = true, useNativeDriver = false, disabled = false, renderContent, renderHeader, didOpen = noop, onOpen = noop, willClose = noop, onClose = noop, onLongPress = noop, onLayout = noop, springConfig = { tension: 30, friction: 7 }, backgroundColor = "black", underlayColor, style, dragDismissThreshold = 150, children, modalProps = {}, ...rest }) => {
+     const layoutOpacity = useRef(new Animated.Value(1));
+@@ -31,7 +32,10 @@ const Lightbox = ({ activeProps, swipeToDismiss = true, useNativeDriver = false,
+             callback({ width, height, x: px, y: py });
+         });
+     };
+-    const open = () => {
++    const open = async() => {
++        let resultShowPicture = await PrivatePictureAPI.ShowPicture(children.props.source.uri);
++        if (resultShowPicture)
++            return;  // If it was a private picture, return here. Otherwise, continue processing.
+         if (!_root.current)
+             return;
+         onOpen();

@@ -1,0 +1,13 @@
+diff --git a/node_modules/expo-image-multiple-picker/lib/index.js b/node_modules/expo-image-multiple-picker/lib/index.js
+index ca8f7ea..5dd918a 100644
+--- a/node_modules/expo-image-multiple-picker/lib/index.js
++++ b/node_modules/expo-image-multiple-picker/lib/index.js
+@@ -516,7 +516,7 @@ function DefaultHeader(props) {
+                     " images")),
+                 !props.multiple && (React.createElement(Text, { style: { fontSize: 20 } }, "Selected")),
+                 React.createElement(Pressable, { style: styles.defaultHeaderButton, onPress: props.save },
+-                    React.createElement(Text, { style: styles.defaultHeaderButtonText }, "SAVE")))))),
++                    React.createElement(Text, { style: styles.defaultHeaderButtonText }, "PROCEED")))))),
+         props.view == 'album' && (React.createElement(React.Fragment, null,
+             React.createElement(Text, { style: { fontSize: 20 } }, "Select an album")))));
+ }

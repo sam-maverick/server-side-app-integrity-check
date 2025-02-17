@@ -1,0 +1,109 @@
+{
+  "expo": {
+    "plugins": [
+      [
+        "./plugins/jvm-memory.js"
+      ],
+      [
+        "./plugins/android-manifest-requestLegacyExternalStorage.js"
+      ],
+      [
+        "./plugins/ios-itms90078-pushnotificationentitlementwarning.ts"
+      ],
+      [
+        "./plugins/ios-platform-version.ts"
+      ],
+      [
+        "./plugins/ios-podfile-development-team.ts"
+      ],
+      [
+        "./plugins/ios-podfile-rct-metro-port.ts"
+      ],
+      [
+        "./plugins/ios-xcode-development-team.ts"
+      ],
+      [
+        "./plugins/ios-codesigningallowed.ts"
+      ],
+      [
+        "./plugins/post_podinstall.ts"
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your contacts in private chats."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "usesCleartextTraffic": true
+          },
+          "ios": {
+            "deploymentTarget": "16.0"
+          }
+        }
+      ]
+    ],
+    "name": "ppimagemarker",
+    "slug": "ppimagemarker",
+    "scheme": "ppimagemarker",
+    "version": "2.12.86",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "pt.lasige.safex.ppimagemarker",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app uses the library to let users share images in private chats.",
+        "NSPhotoLibraryAddUsageDescription": "This app uses the library to let users share images in private chats.",
+        "NSAllowsLocalNetworking": false,
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "buildNumber": "26"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA_ROLL",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.ACCESS_MEDIA_LOCATION"
+      ],
+      "package": "pt.lasige.safex.ppimagemarker",
+      "versionCode": 306
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ee367600-6098-42d0-a95e-539944cfc964"
+      }
+    }
+  }
+}

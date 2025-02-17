@@ -1,0 +1,74 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 21 (0x15)
+        Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=PT, O=RESEARCH, CN=CA 01 of RESEARCH PROJECT
+        Validity
+            Not Before: Feb 14 12:00:00 2024 GMT
+            Not After : Aug 14 12:00:00 2024 GMT
+        Subject: CN=ppserver-gen.localnetwork.org
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:80:fa:a0:ed:3f:64:e1:27:cd:96:c8:04:95:ce:
+                    ae:b9:a7:70:6f:88:1c:5b:6b:d0:97:0c:06:d7:f9:
+                    c5:02:4c:2c:51:fa:dd:09:fa:f0:d4:0c:6f:09:ec:
+                    fd:1a:57:38:07:a2:7e:1f:c2:0c:02:ed:8e:8d:2d:
+                    c6:62:c2:56:93
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Cert Type: 
+                SSL Server
+            Netscape Comment: 
+                Custom Certification Authority
+            X509v3 Subject Key Identifier: 
+                17:17:25:32:3A:5E:52:66:11:E3:22:53:95:4B:33:3E:E6:0D:C1:DE
+            X509v3 Authority Key Identifier: 
+                CD:04:4D:09:66:78:59:E7:C6:CA:08:DD:DD:61:84:3C:40:E6:7C:C6
+            X509v3 Key Usage: critical
+                Digital Signature, Non Repudiation, Key Encipherment
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Subject Alternative Name: 
+                DNS:ppserver-gen.localnetwork.org
+    Signature Algorithm: ecdsa-with-SHA384
+    Signature Value:
+        30:44:02:20:2d:f2:36:13:f4:ab:e0:a7:2f:97:78:01:fb:84:
+        9e:44:68:55:ba:c5:d5:8f:a4:e3:d7:28:38:38:a8:e4:e1:53:
+        02:20:10:07:54:e4:cd:58:07:a4:df:bf:23:9a:a0:f3:04:af:
+        90:43:76:67:1f:02:36:2c:3b:ee:17:3c:5c:d0:47:b2
+-----BEGIN CERTIFICATE-----
+MIICOjCCAeGgAwIBAgIBFTAKBggqhkjOPQQDAzBEMQswCQYDVQQGEwJQVDERMA8G
+A1UECgwIUkVTRUFSQ0gxIjAgBgNVBAMMGUNBIDAxIG9mIFJFU0VBUkNIIFBST0pF
+Q1QwHhcNMjQwMjE0MTIwMDAwWhcNMjQwODE0MTIwMDAwWjAoMSYwJAYDVQQDDB1w
+cHNlcnZlci1nZW4ubG9jYWxuZXR3b3JrLm9yZzBZMBMGByqGSM49AgEGCCqGSM49
+AwEHA0IABID6oO0/ZOEnzZbIBJXOrrmncG+IHFtr0JcMBtf5xQJMLFH63Qn68NQM
+bwns/RpXOAeifh/CDALtjo0txmLCVpOjgd8wgdwwCQYDVR0TBAIwADARBglghkgB
+hvhCAQEEBAMCBkAwLQYJYIZIAYb4QgENBCAWHkN1c3RvbSBDZXJ0aWZpY2F0aW9u
+IEF1dGhvcml0eTAdBgNVHQ4EFgQUFxclMjpeUmYR4yJTlUszPuYNwd4wHwYDVR0j
+BBgwFoAUzQRNCWZ4WefGygjd3WGEPEDmfMYwDgYDVR0PAQH/BAQDAgXgMBMGA1Ud
+JQQMMAoGCCsGAQUFBwMBMCgGA1UdEQQhMB+CHXBwc2VydmVyLWdlbi5sb2NhbG5l
+dHdvcmsub3JnMAoGCCqGSM49BAMDA0cAMEQCIC3yNhP0q+CnL5d4AfuEnkRoVbrF
+1Y+k49coODio5OFTAiAQB1TkzVgHpN+/I5qg8wSvkEN2Zx8CNiw77hc8XNBHsg==
+-----END CERTIFICATE-----
+
+-----BEGIN CERTIFICATE-----
+MIICYDCCAgWgAwIBAgIUBrVdRXDsfKBBr1ST+DXu2ysswKMwCgYIKoZIzj0EAwIw
+RDELMAkGA1UEBhMCUFQxETAPBgNVBAoMCFJFU0VBUkNIMSIwIAYDVQQDDBlDQSAw
+MSBvZiBSRVNFQVJDSCBQUk9KRUNUMB4XDTI0MDUzMTE2MzIzMVoXDTM0MDUyOTE2
+MzIzMVowRDELMAkGA1UEBhMCUFQxETAPBgNVBAoMCFJFU0VBUkNIMSIwIAYDVQQD
+DBlDQSAwMSBvZiBSRVNFQVJDSCBQUk9KRUNUMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+AQcDQgAEZwlps78MwASIdRCqA7n6YQXMHOKYcTcAVVKvF0tsGdHNk8YfDd6Xwdw4
+Z20Ig79AhTbARhgHS65D3efBUAsblqOB1DCB0TAdBgNVHQ4EFgQUzQRNCWZ4WefG
+ygjd3WGEPEDmfMYwfwYDVR0jBHgwdoAUzQRNCWZ4WefGygjd3WGEPEDmfMahSKRG
+MEQxCzAJBgNVBAYTAlBUMREwDwYDVQQKDAhSRVNFQVJDSDEiMCAGA1UEAwwZQ0Eg
+MDEgb2YgUkVTRUFSQ0ggUFJPSkVDVIIUBrVdRXDsfKBBr1ST+DXu2ysswKMwDwYD
+VR0TBAgwBgEB/wIBADALBgNVHQ8EBAMCAf4wEQYJYIZIAYb4QgEBBAQDAgEGMAoG
+CCqGSM49BAMCA0kAMEYCIQD7XzkYqhNWAHWixV8JD7eaLeyILcnlVsGdFh4n/M4+
+qQIhAPlo3/YhMcIiB1fnXvoRXPlijpZZt/7FbwxrpvwRqFr3
+-----END CERTIFICATE-----

@@ -1,0 +1,110 @@
+{
+  "expo": {
+    "plugins": [
+      [
+        "./plugins/android-manifest-fileprovider-definitions.js"
+      ],
+      [
+        "./plugins/android-manifest-requestLegacyExternalStorage.js"
+      ],
+      [
+        "./plugins/jvm-memory.js"
+      ],
+      [
+        "./plugins/ios-itms90078-pushnotificationentitlementwarning.ts"
+      ],
+      [
+        "./plugins/ios-platform-version.ts"
+      ],
+      [
+        "./plugins/ios-podfile-development-team.ts"
+      ],
+      [
+        "./plugins/ios-podfile-rct-metro-port.ts"
+      ],
+      [
+        "./plugins/ios-xcode-development-team.ts"
+      ],
+      [
+        "./plugins/ios-codesigningallowed.ts"
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your contacts in private chats."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "usesCleartextTraffic": true,
+            "packagingOptions": {
+              "pickFirst": [
+                "**/libcrypto.so"
+              ]
+            }
+          },
+          "ios": {
+            "deploymentTarget": "16.0"
+          }
+        }
+      ]
+    ],
+    "name": "enhmessageme",
+    "slug": "enhmessageme",
+    "scheme": "enhmsm",
+    "version": "2.22.291",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "pt.lasige.safex.enhmessageme",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "pripro"
+        ],
+        "NSPhotoLibraryUsageDescription": "This app uses the library to let users share images in private chats.",
+        "NSPhotoLibraryAddUsageDescription": "This app uses the library to let users share images in private chats.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "buildNumber": "10"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA_ROLL",
+        "android.permission.READ_MEDIA_IMAGES"
+      ],
+      "package": "pt.lasige.safex.enhmessageme",
+      "versionCode": 257
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ca35569b-ed5a-4669-8487-7fbf6bef1b84"
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+diff --git a/node_modules/base-64/base64.js b/node_modules/base-64/base64.js
+index 0b335e5..cf71eeb 100644
+--- a/node_modules/base-64/base64.js
++++ b/node_modules/base-64/base64.js
+@@ -1,4 +1,8 @@
+ /*! https://mths.be/base64 v1.0.0 by @mathias | MIT license */
++
++import * as MyUtils from '../../src/myGeneralLibrary';
++const LIBN = '(ppclient) (base64.js)';
++
+ ;(function(root) {
+ 
+ 	// Detect free variables `exports`.
+@@ -76,7 +80,9 @@
+ 	// `encode` is designed to be fully compatible with `btoa` as described in the
+ 	// HTML Standard: http://whatwg.org/html/webappapis.html#dom-windowbase64-btoa
+ 	var encode = function(input) {
++MyUtils.LogSys(LIBN, 1, 'start');
+ 		input = String(input);
++MyUtils.LogSys(LIBN, 1, 'check');
+ 		if (/[^\0-\xFF]/.test(input)) {
+ 			// Note: no need to special-case astral symbols here, as surrogates are
+ 			// matched, and the input is supposed to only contain ASCII anyway.
+@@ -95,6 +101,7 @@
+ 		// Make sure any padding is handled outside of the loop.
+ 		var length = input.length - padding;
+ 
++		MyUtils.LogSys(LIBN, 1, 'towhile');
+ 		while (++position < length) {
+ 			// Read three bytes, i.e. 24 bits.
+ 			a = input.charCodeAt(position) << 16;
+@@ -110,6 +117,7 @@
+ 				TABLE.charAt(buffer & 0x3F)
+ 			);
+ 		}
++		MyUtils.LogSys(LIBN, 1, 'endings');
+ 
+ 		if (padding == 2) {
+ 			a = input.charCodeAt(position) << 8;

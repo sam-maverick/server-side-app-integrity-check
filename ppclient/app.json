@@ -1,0 +1,121 @@
+{
+  "expo": {
+    "plugins": [
+      [
+        "./plugins/android-manifest-https-traffic.js"
+      ],
+      [
+        "./plugins/ios-https-traffic.ts"
+      ],
+      [
+        "./plugins/ios-itms90078-pushnotificationentitlementwarning.ts"
+      ],
+      [
+        "./plugins/ios-platform-version.ts"
+      ],
+      [
+        "./plugins/ios-podfile-development-team.ts"
+      ],
+      [
+        "./plugins/ios-podfile-rct-metro-port.ts"
+      ],
+      [
+        "./plugins/ios-xcode-development-team.ts"
+      ],
+      [
+        "./plugins/ios-codesigningallowed.ts"
+      ],
+      [
+        "./plugins/android-manifest-package-visibility.js"
+      ],
+      [
+        "./plugins/jvm-memory.js"
+      ],
+      [
+        "./plugins/post_podinstall.ts"
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "usesCleartextTraffic": true,
+            "packagingOptions": {
+              "pickFirst": [
+                "**/libcrypto.so"
+              ]
+            }
+          },
+          "ios": {
+            "deploymentTarget": "16.0"
+          }
+        }
+      ],
+      "expo-asset",
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+        }
+      ]
+    ],
+    "name": "ppclient",
+    "slug": "ppclient",
+    "scheme": "pripro-gen",
+    "version": "2.11.534",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "pt.lasige.safex.ppclient",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true,
+          "NSExceptionDomains": {
+            "localnetwork.org": {
+              "NSIncludesSubdomains": true,
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            },
+            "localhost": {
+              "NSIncludesSubdomains": false,
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        },
+        "NSLocalNetworkUsageDescription": "This app may access the local network in Development environments",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "buildNumber": "74"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.QUERY_ALL_PACKAGES",
+        "pt.lasige.safex.permission.PRIVACY_PROVIDER"
+      ],
+      "package": "pt.lasige.safex.ppclient",
+      "versionCode": 379
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e95e0e42-d7a5-4b52-8f94-9a71a98d0aba"
+      }
+    }
+  }
+}

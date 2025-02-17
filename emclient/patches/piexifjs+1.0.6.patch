@@ -1,0 +1,196 @@
+diff --git a/node_modules/piexifjs/piexif.js b/node_modules/piexifjs/piexif.js
+index d0b9c85..60cdc5b 100644
+--- a/node_modules/piexifjs/piexif.js
++++ b/node_modules/piexifjs/piexif.js
+@@ -23,6 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
+ 
++import * as UpdUtils from '../../os_update/update-utils';
++import { PARAM_IMPLEMENTATION_PNG_FASTCHECK_NONPRIVATE, PARAM_EXIF_ASCII_PREFIX } from '../../os_update/update-parameters';
++const LIBN = '(emclient) (piexif.js)';
++
+ (function () {
+     "use strict";
+     var that = {};
+@@ -77,6 +81,123 @@ SOFTWARE.
+     };
+ 
+ 
++    that.isPrivatePicture = function (data) {
++        UpdUtils.LogSys(LIBN, 1, 'isPrivatePicture entered');
++        var input_data;
++        if (typeof (data) == "string") {
++            if (data.slice(0, 2) == "\xff\xd8") {
++                input_data = data;
++            } else if (data.slice(0, 23) == "data:image/jpeg;base64," || data.slice(0, 22) == "data:image/jpg;base64,") {
++                UpdUtils.LogSys(LIBN, 1, 'splitting');
++                const splittedpart = data.split(",")[1];
++
++                const hexEncode = function(str) {
++                    let hex;
++                    var result = '';
++                    for (let i=0; i<str.length; i++) {
++                        hex = str.charCodeAt(i).toString(16);
++                        if (hex.length == 1)  { hex = '0'+hex; }
++                        result = result + hex;
++                    }
++                    return result;
++                }
++
++                if (PARAM_IMPLEMENTATION_PNG_FASTCHECK_NONPRIVATE==='y') {
++                    UpdUtils.LogSys(LIBN, 1, 'PNG_FASTCHECK started');   
++                    if (splittedpart.length>=12) {
++                        const PNG_signature = String.fromCharCode(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);  // 8 bytes
++                        UpdUtils.LogSys(LIBN, 2, 'PNG_signature='+hexEncode(PNG_signature));
++                        // For simplicity about BASE64 processing of padding, we take a number of bits that is a common multiple of 8 and 4, 
++                        // i.e. divisible by 24. This means that the number of bytes of the data is multiple of 3.
++                        // In other words, if the input bytes is multiple of 3, we will not need "="/"==" padding for the BASE64 string
++                        let file_sig = atob(splittedpart.substring(0, 12));  // 9 bytes of data == 9 + 9/3 == 12 characters in BASE64
++                        UpdUtils.LogSys(LIBN, 2, 'file_sig='+hexEncode(file_sig));
++                        // file_sig is expected to be 9 bytes here
++                        file_sig = file_sig.substring(0, 8); // We eliminate last byte, so we have the first 8 bytes. Now we can compare
++                        UpdUtils.LogSys(LIBN, 2, 'file_sig='+hexEncode(file_sig));
++                        if (file_sig == PNG_signature) {
++                            UpdUtils.LogSys(LIBN, 0, 'PNG detected by PNG_FASTCHECK');   
++                            return {isPrivatePicture: false, metadata: {}};
++                        } else {
++                            UpdUtils.LogSys(LIBN, 0, 'PNG not detected by PNG_FASTCHECK; we continue normal processing');   
++                        }
++                    } else {
++                        UpdUtils.LogSys(LIBN, 1, 'Tiny file; PNG_FASTCHECK skipped');                           
++                    }
++                }
++
++                UpdUtils.LogSys(LIBN, 1, 'atob');
++                input_data = atob(splittedpart);
++                UpdUtils.LogSys(LIBN, 1, 'done');
++            } else if (data.slice(0, 4) == "Exif") {
++                input_data = data.slice(6);
++            } else {
++                throw new Error("'load' gots invalid file data.");
++            }
++        } else {
++            throw new Error("'load' gots invalid type argument.");
++        }
++        UpdUtils.LogSys(LIBN, 1, 'input_data finished');
++
++        var exifDict = {};
++        var exif_dict = {
++            "0th": {},
++            "Exif": {},
++            "GPS": {},
++            "Interop": {},
++            "1st": {},
++            "thumbnail": null
++        };
++        var exifReader = new ExifReader(input_data);
++        if (exifReader.tiftag === null) {
++            return exif_dict;
++        }
++
++        if (exifReader.tiftag.slice(0, 2) == "\x49\x49") {
++            exifReader.endian_mark = "<";
++        } else {
++            exifReader.endian_mark = ">";
++        }
++
++        var pointer = unpack(exifReader.endian_mark + "L",
++            exifReader.tiftag.slice(4, 8))[0];
++        exif_dict["0th"] = exifReader.get_ifd(pointer, "0th");
++
++        var first_ifd_pointer = exif_dict["0th"]["first_ifd_pointer"];
++        delete exif_dict["0th"]["first_ifd_pointer"];
++
++        if (34665 in exif_dict["0th"]) {
++            pointer = exif_dict["0th"][34665];
++            // Fast detection of private picture without interfering with the rest of the process
++            var ret = exifReader.get_ifd_detect_private_picture(pointer, "Exif");
++            if (ret?.isPrivatePicture===true) { return ret; }
++            exif_dict["Exif"] = ret;
++        }
++        if (34853 in exif_dict["0th"]) {
++            pointer = exif_dict["0th"][34853];
++            exif_dict["GPS"] = exifReader.get_ifd(pointer, "GPS");
++        }
++        if (40965 in exif_dict["Exif"]) {
++            pointer = exif_dict["Exif"][40965];
++            exif_dict["Interop"] = exifReader.get_ifd(pointer, "Interop");
++        }
++        if (first_ifd_pointer != "\x00\x00\x00\x00") {
++            pointer = unpack(exifReader.endian_mark + "L",
++                first_ifd_pointer)[0];
++            exif_dict["1st"] = exifReader.get_ifd(pointer, "1st");
++            if ((513 in exif_dict["1st"]) && (514 in exif_dict["1st"])) {
++                var end = exif_dict["1st"][513] + exif_dict["1st"][514];
++                var thumb = exifReader.tiftag.slice(exif_dict["1st"][513], end);
++                exif_dict["thumbnail"] = thumb;
++            }
++        }
++
++        UpdUtils.LogSys(LIBN, 1, 'returning');
++        //return exif_dict;
++        return {isPrivatePicture: false, metadata: {}};
++    };
++
++
+     that.load = function (data) {
+         var input_data;
+         if (typeof (data) == "string") {
+@@ -529,6 +650,56 @@ SOFTWARE.
+             return ifd_dict;
+         },
+ 
++        get_ifd_detect_private_picture: function (pointer, ifd_name) {
++            var ifd_dict = {};
++            var tag_count = unpack(this.endian_mark + "H",
++                this.tiftag.slice(pointer, pointer + 2))[0];
++            var offset = pointer + 2;
++            var t;
++            if (["0th", "1st"].indexOf(ifd_name) > -1) {
++                t = "Image";
++            } else {
++                t = ifd_name;
++            }
++
++            for (var x = 0; x < tag_count; x++) {
++                pointer = offset + 12 * x;
++                var tag = unpack(this.endian_mark + "H",
++                    this.tiftag.slice(pointer, pointer + 2))[0];
++                var value_type = unpack(this.endian_mark + "H",
++                    this.tiftag.slice(pointer + 2, pointer + 4))[0];
++                var value_num = unpack(this.endian_mark + "L",
++                    this.tiftag.slice(pointer + 4, pointer + 8))[0];
++                var value = this.tiftag.slice(pointer + 8, pointer + 12);
++
++                var v_set = [value_type, value_num, value];
++                if (tag in TAGS[t]) {
++                    ifd_dict[tag] = this.convert_value(v_set);
++                    if (tag === that.ExifIFD.UserComment) {
++                        UpdUtils.LogSys(LIBN, 1, 'ExifIFD.UserComment tag found: '+ifd_dict[tag]);
++                        try {
++                            var userCommentObj = JSON.parse(String(ifd_dict[tag]).replace(PARAM_EXIF_ASCII_PREFIX, ''));
++                            if (userCommentObj?.pictureType==='private') {
++                                UpdUtils.LogSys(LIBN, 1, 'pictureType===private detected');
++                                return {isPrivatePicture: true, metadata: userCommentObj};
++                            } else {
++                                UpdUtils.LogSys(LIBN, 1, 'pictureType===private NOT detected');
++                            }
++                        } catch (err) {
++                            UpdUtils.LogSys(LIBN, 1, 'Error while parsing tag from string to object: '+err.message);
++                        }
++                    }
++                }
++            }
++
++            if (ifd_name == "0th") {
++                pointer = offset + 12 * tag_count;
++                ifd_dict["first_ifd_pointer"] = this.tiftag.slice(pointer, pointer + 4);
++            }
++
++            return {isPrivatePicture: false, metadata: {}};
++        },
++
+         convert_value: function (val) {
+             var data = null;
+             var t = val[0];

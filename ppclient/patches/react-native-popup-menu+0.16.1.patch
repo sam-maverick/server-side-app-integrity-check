@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-popup-menu/build/rnpm.js b/node_modules/react-native-popup-menu/build/rnpm.js
+index 1111c2d..180cb84 100644
+--- a/node_modules/react-native-popup-menu/build/rnpm.js
++++ b/node_modules/react-native-popup-menu/build/rnpm.js
+@@ -2340,7 +2340,7 @@
+   }(React.Component);
+   MenuTrigger.propTypes = {
+     disabled: propTypes.bool,
+-    text: propTypes.string,
++    text: propTypes.object,
+     onPress: propTypes.func,
+     onAlternativeAction: propTypes.func,
+     customStyles: propTypes.object,
+diff --git a/node_modules/react-native-popup-menu/src/MenuTrigger.js b/node_modules/react-native-popup-menu/src/MenuTrigger.js
+index f23ff32..32d36b9 100644
+--- a/node_modules/react-native-popup-menu/src/MenuTrigger.js
++++ b/node_modules/react-native-popup-menu/src/MenuTrigger.js
+@@ -39,7 +39,7 @@ export class MenuTrigger extends Component {
+ 
+ MenuTrigger.propTypes = {
+   disabled: PropTypes.bool,
+-  text: PropTypes.string,
++  text: PropTypes.object,
+   onPress: PropTypes.func,
+   onAlternativeAction: PropTypes.func,
+   customStyles: PropTypes.object,

@@ -1,0 +1,60 @@
+diff --git a/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilStream.java b/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilStream.java
+index ef1e357..fcbdebe 100644
+--- a/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilStream.java
++++ b/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilStream.java
+@@ -148,11 +148,21 @@ public class ReactNativeBlobUtilStream {
+      * @param callback Callback
+      */
+     void writeStream(String path, String encoding, boolean append, Callback callback) {
++        String resolved = ReactNativeBlobUtilUtils.normalizePath(path);
++
++        if (resolved != null)
++            path = resolved;
++
+         try {
++           /** 
++            * On files of type content:// (these are the files served through a FileProvider), dest.exists() 
++            * yields false and an error is thrown: Error: Failed to create parent directory of 'content://...
++            * So in those cases we just skip this check.
++            */
+             File dest = new File(path);
+             File dir = dest.getParentFile();
+ 
+-            if (!dest.exists()) {
++            if (resolved != null && !dest.exists()) {
+                 if (dir != null && !dir.exists()) {
+                     if (!dir.mkdirs()) {
+                         callback.invoke("ENOTDIR", "Failed to create parent directory of '" + path + "'");
+@@ -168,7 +178,18 @@ public class ReactNativeBlobUtilStream {
+                 return;
+             }
+ 
+-            OutputStream fs = new FileOutputStream(path, append);
++            OutputStream fs;
++
++            if (resolved != null && path.startsWith(ReactNativeBlobUtilConst.FILE_PREFIX_BUNDLE_ASSET)) {
++                fs = ReactNativeBlobUtilImpl.RCTContext.getAssets().openFd(path.replace(ReactNativeBlobUtilConst.FILE_PREFIX_BUNDLE_ASSET, "")).createOutputStream ();
++            }
++            // fix issue 287
++            else if (resolved == null) {
++                fs = ReactNativeBlobUtilImpl.RCTContext.getContentResolver().openOutputStream(Uri.parse(path));
++            } else {
++                fs = new FileOutputStream(path, append);
++            }
++
+             this.encoding = encoding;
+             String streamId = UUID.randomUUID().toString();
+             ReactNativeBlobUtilStream.fileStreams.put(streamId, this);
+diff --git a/node_modules/react-native-blob-util/class/ReactNativeBlobUtilReadStream.js b/node_modules/react-native-blob-util/class/ReactNativeBlobUtilReadStream.js
+index 490efb1..1256769 100644
+--- a/node_modules/react-native-blob-util/class/ReactNativeBlobUtilReadStream.js
++++ b/node_modules/react-native-blob-util/class/ReactNativeBlobUtilReadStream.js
+@@ -64,7 +64,7 @@ export default class ReactNativeBlobUtilReadStream {
+ 
+     open() {
+         if (!this.closed)
+-            ReactNativeBlobUtil.readStream(this.path, this.encoding, this.bufferSize || 10240, this.tick || -1, this.streamId);
++            ReactNativeBlobUtil.readStream(this.path, this.encoding, this.bufferSize || (this.encoding=='base64' ? 4095 : 4096), this.tick || -1, this.streamId);
+         else
+             throw new Error('Stream closed');
+     }

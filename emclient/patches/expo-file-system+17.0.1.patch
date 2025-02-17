@@ -1,0 +1,12 @@
+diff --git a/node_modules/expo-file-system/package.json b/node_modules/expo-file-system/package.json
+index e6ff63b..b4f4a32 100644
+--- a/node_modules/expo-file-system/package.json
++++ b/node_modules/expo-file-system/package.json
+@@ -6,6 +6,7 @@
+   "types": "build/index.d.ts",
+   "sideEffects": false,
+   "scripts": {
++    "tsc": "expo-module tsc",
+     "build": "expo-module build",
+     "clean": "expo-module clean",
+     "lint": "expo-module lint",
